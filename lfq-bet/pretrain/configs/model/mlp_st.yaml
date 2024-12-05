@@ -1,0 +1,57 @@
+_target_: pretrain.models.state_tokenizer.StateTokenizer
+optimizer:
+  _target_: torch.optim.Adam
+  _partial_: true
+  lr: 0.001
+  weight_decay: 0.0
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+  _partial_: true
+  mode: min
+  factor: 0.1
+  patience: 10
+
+# net:
+#   _target_: src.models.components.simple_dense_net.SimpleDenseNet
+#   input_size: 784
+#   lin1_size: 64
+#   lin2_size: 128
+#   lin3_size: 64
+#   output_size: 10
+
+# latent_dim: 512
+# act_chunk_len: 10
+
+
+act_vae:
+  _target_: pretrain.models.autoencoders.action_vae.ActVQVAE
+
+  encoder:
+    _target_: pretrain.models.autoencoders.encoder.MLPChunkActEncoder
+    input_dim: ${state_dim}  #action space size
+    hidden_dim: 512
+    # latent_dim: 512 # TODO:fix this
+    latent_dim: ${latent_dim} 
+    act_chunk_len: ${state_window_size}
+    num_layers: 3
+    # act_chunk_len: ${..act_chunk_len}
+  latent_layer: 
+    _target_: pretrain.models.autoencoders.nets.latent_layer.LFQLayer
+    latent_dim: ${latent_dim}
+    # latent_dim: 512
+    codebook_size: ${state_codebook_size}
+  decoder:
+    _target_: pretrain.models.autoencoders.decoder.MLPChunkActDecoder
+    output_dim: ${state_dim}
+    hidden_dim: 512
+    latent_dim: ${latent_dim}
+    # latent_dim: 512
+    act_chunk_len: ${state_window_size}
+    num_layers: 3
+    # act_chunk_len: ${..act_chunk_len}
+
+use_symlog: true
+
+# compile model for faster training with pytorch 2.0
+compile: false

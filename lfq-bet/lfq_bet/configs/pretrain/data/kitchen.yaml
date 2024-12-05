@@ -1,0 +1,12 @@
+_target_: pretrain.data.kitchen_datamodule.KitchenDataModule
+# data_dir: ${env_vars.datasets.relay_kitchen}
+data_dir: /home/yxt/thesis/jiayu/vq_bet_official/vqbet_datasets_for_release/relay_kitchen
+num_workers: 0
+pin_memory: false
+goal_conditional: future
+window_size: ${window_size}
+future_seq_len: ${goal_window_size}
+min_future_sep: ${action_window_size}
+action_window_size: ${action_window_size}
+vqbet_get_future_action_chunk: false
+

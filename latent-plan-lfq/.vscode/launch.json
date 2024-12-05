@@ -1,0 +1,90 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--dataset", "antmaze-large-diverse-v0",
+                "--exp_name", "debug",
+                // "--K", "16384",
+                // "--trajectory_embd", "14",
+            ],            
+            "env": {
+                "WANDB_MODE": "disabled",
+            },
+            
+        },
+        {
+            "name": "plot",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/plotting/read_results.py",
+            "env": {
+                "WANDB_MODE": "disabled",
+            },
+            "args": ["--exp_name", "T-1-1", "--dataset", "hopper-medium-replay-v2"],
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "test_train_lfq",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/scripts/train_lfq.py",
+            "args": ["--exp_name", "debug", "--dataset", "hopper-medium-replay-v2", "--K", "1024","--trajectory_embd", "10"],
+            "env": {
+                "WANDB_MODE": "disabled",
+            },
+        },
+        {
+            "name": "Python: plan.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/scripts/plan.py",
+            "args": [
+                "--test_planner", "beam_prior",
+                "--exp_name", "debug-1",
+                "--suffix", "1",
+                "--dataset", "antmaze-large-diverse-v0",
+                "--beam_width", "2",
+                "--n_expand", "4"
+            ],
+            "env": {
+                "WANDB_MODE": "disabled",
+            },
+        },
+        {
+            "name": "plot_test_lfq",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/plotting/read_results.py",
+            "args": ["--exp_name", "test_lfq", "--dataset", "hopper-medium-expert-v2"],
+            "console": "integratedTerminal",
+            "env": {
+                "WANDB_MODE": "disabled",
+            }
+        },
+        {
+            "name": "trainprior",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/scripts/trainprior.py",
+            "args": [
+                "--dataset", "antmaze-large-diverse-v0",
+                "--exp_name", "lfq_K16384_zdim14-1",
+                // "--K", "16384",
+                // "--trajectory_embd", "14",
+            ],
+            "env": {
+                "WANDB_MODE": "disabled",
+                "CUDA_LAUNCH_BLOCKING": "1",
+            }
+        }
+    ]
+}

@@ -1,0 +1,25 @@
+vqbet_rollout:
+  __target__: lsq_bet.callbacks.rollout.EvalOnEnv
+
+  goal_fn:
+    _target_: kitchen_env.get_goal_fn
+    data_directory: ${env_vars.datasets.relay_kitchen}
+    goal_conditional: ${data.goal_conditional}
+    seed: ${seed}
+    train_fraction: 0.95
+    goal_seq_len: ${goal_window_size}
+    unconditional: false
+    goal_dim: ${goal_dim}
+    visual_input: ${visual_input}
+
+  env:
+    gym:
+      _target_: kitchen_env.KitchenWrapper
+      id: kitchen-v0
+      env:
+        _target_: gym.make
+        id: kitchen-v0
+      visual_input: ${visual_input}
+    obs_dim: 60
+    act_dim: 9
+    goal_dim: ${goal_dim}

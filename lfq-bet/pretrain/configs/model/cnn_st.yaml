@@ -1,0 +1,46 @@
+_target_: pretrain.models.tokenizer.BaseTokenizer
+
+key: "obs"
+
+optimizer:
+  _target_: torch.optim.Adam
+  _partial_: true
+  lr: 0.001
+  weight_decay: 0.0
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+  _partial_: true
+  mode: min
+  factor: 0.1
+  patience: 10
+
+vae:
+  _target_: pretrain.models.autoencoders.vae.BaseVQVAE
+
+  encoder:
+    _target_: pretrain.models.autoencoders.encoder.Causal1DCNNEncoder
+    input_dim: ${data.meta.state_dim}  #action space size
+    hidden_dim: 64
+    latent_dim: ${model_spec.obs_latent_dim} 
+    num_layers: 2
+    kernel_size: 3
+
+  latent_layer: 
+    _target_: pretrain.models.autoencoders.nets.latent_layer.LFQLayer
+    latent_dim: ${model_spec.obs_latent_dim}
+    # latent_dim: 128
+    codebook_size: ${model_spec.obs_codebook_size}
+    num_codebooks: ${model_spec.num_obs_codebooks}
+  decoder:
+    _target_: pretrain.models.autoencoders.decoder.Causal1DCNNDecoder
+    output_dim: ${data.meta.state_dim}
+    hidden_dim: 64
+    latent_dim: ${model_spec.obs_latent_dim}
+    kernel_size: 3
+    num_layers: 2
+
+use_symlog: true
+
+# compile model for faster training with pytorch 2.0
+compile: false

@@ -1,0 +1,28 @@
+_target_: lsq_bet.models.lsq_bet.LSQBeT
+optimizer:
+  _target_: torch.optim.Adam
+  _partial_: true
+  lr: 0.001
+  weight_decay: 0.0
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+  _partial_: true
+  mode: min
+  factor: 0.1
+  patience: 10
+
+
+gpt_cfg:
+  _target_: lsq_bet.models.nets.gpt.GPTConfig
+  block_size: 110
+  # input_dim: ${env.obs_dim}
+#TODO:vocab should be read the codebook size
+  vocab_size: 4096 
+  n_layer: 6
+  n_head: 6
+  n_embd: 120
+  bias: false
+
+# compile model for faster training with pytorch 2.0
+compile: true

@@ -1,0 +1,49 @@
+_target_: pretrain.models.action_tokenizer.ActionTokenizer
+
+optimizer:
+  _target_: torch.optim.Adam
+  _partial_: true
+  lr: 0.001
+  weight_decay: 0.0
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+  _partial_: true
+  mode: min
+  factor: 0.1
+  patience: 10
+
+
+
+act_vae:
+  _target_: pretrain.models.autoencoders.action_vae.ActVQVAE
+
+  encoder:
+    _target_: pretrain.models.autoencoders.encoder.MLPChunkActEncoder
+    input_dim: ${action_dim}  #action space size
+    hidden_dim: 512
+    # latent_dim: 512 # TODO:fix this
+    latent_dim: ${latent_dim} 
+    act_chunk_len: ${action_window_size}
+    num_layers: 3
+    # act_chunk_len: ${..act_chunk_len}
+  latent_layer: 
+    _target_: pretrain.models.autoencoders.nets.latent_layer.LFQLayer
+    # latent_dim: ${..latent_dim}
+    latent_dim: ${latent_dim} 
+    # latent_dim: 512
+    codebook_size: ${action_codebook_size}
+  decoder:
+    _target_: pretrain.models.autoencoders.decoder.MLPChunkActDecoder
+    output_dim: 9
+    hidden_dim: 512
+    # latent_dim: 512
+    latent_dim: ${latent_dim} 
+    act_chunk_len: ${action_window_size}
+    num_layers: 3
+    # act_chunk_len: ${..act_chunk_len}
+
+use_symlog: true
+
+# compile model for faster training with pytorch 2.0
+compile: false
